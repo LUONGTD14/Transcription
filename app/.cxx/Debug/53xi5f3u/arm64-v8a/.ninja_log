@@ -1,3 +1,3 @@
 # ninja log v5
-1	12527	7544983807342916	CMakeFiles/transcriptor.dir/native-lib.cpp.o	41e7f601b76da0d
-12538	13108	7544983813288407	D:/AndroidProject/Transcriptor/app/build/intermediates/cxx/Debug/53xi5f3u/obj/arm64-v8a/libtranscriptor.so	4ddb0122c85995dc
+2	7794	7545081613880301	CMakeFiles/transcriptor.dir/native-lib.cpp.o	41e7f601b76da0d
+7805	8081	7545081616895345	D:/AndroidProject/Transcriptor/app/build/intermediates/cxx/Debug/53xi5f3u/obj/arm64-v8a/libtranscriptor.so	4ddb0122c85995dc

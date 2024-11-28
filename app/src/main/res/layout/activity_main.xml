@@ -36,7 +36,7 @@
                 android:background="@color/white"
                 android:fontFamily="monospace"
                 android:padding="10dp"
-                android:text="Transcription message"
+                android:hint="Transcription message"
                 android:textSize="16sp" />
         </ScrollView>
 
@@ -54,7 +54,7 @@
                 android:background="@color/white"
                 android:fontFamily="monospace"
                 android:padding="10dp"
-                android:text="Original message"
+                android:hint="Original message"
                 android:textSize="16sp" />
         </ScrollView>
 
@@ -96,7 +96,7 @@
         android:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/mic_on" />
+        app:srcCompat="@drawable/mic_off" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnConnect"

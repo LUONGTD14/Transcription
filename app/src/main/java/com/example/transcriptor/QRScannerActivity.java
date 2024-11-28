@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import androidx.annotation.Nullable;
+
 import android.content.Intent;
 
 import android.widget.Toast;
@@ -50,7 +51,6 @@ public class QRScannerActivity extends AppCompatActivity {
         }
     }
 
-
     private void pickImageFromDevice() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
@@ -74,18 +74,17 @@ public class QRScannerActivity extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 barcodeView.resume();
             } else {
-                Toast.makeText(this, "Camera permission is required to scan QR codes", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Camera permission is required to scan QR codes",
+                        Toast.LENGTH_LONG).show();
                 finish();
             }
         }
     }
 
-
     private void decodeQRCodeFromImage(Uri imageUri) {
         try {
             InputStream imageStream = getContentResolver().openInputStream(imageUri);
             Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
-
             BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
                     new BitmapLuminanceSource(bitmap)
             ));
@@ -125,7 +124,6 @@ public class QRScannerActivity extends AppCompatActivity {
         }
         btnPickImage.setOnClickListener(v -> pickImageFromDevice());
     }
-
 
     @Override
     protected void onPause() {
