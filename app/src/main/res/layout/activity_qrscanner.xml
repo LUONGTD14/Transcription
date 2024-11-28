@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    tools:context=".QRScannerActivity"
+    android:weightSum="10">
+
+    <!-- Camera Preview -->
+    <com.journeyapps.barcodescanner.DecoratedBarcodeView
+        android:id="@+id/barcode_scanner"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="8" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:orientation="horizontal"
+        android:weightSum="5"
+        android:padding="40dp">
+        <ImageButton
+            android:id="@+id/btn_pick_image"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.25"
+            android:layout_gravity="center"
+            android:src="@drawable/qr_code"
+            android:contentDescription="Select Image" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:gravity="center_vertical"
+            android:text="Select from device."
+            android:textSize="14sp"
+            android:paddingLeft="14dp"/>
+    </LinearLayout>
+
+</LinearLayout>

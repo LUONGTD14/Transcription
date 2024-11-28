@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "84796082162",
+    "project_id": "transciptor-6a499",
+    "storage_bucket": "transciptor-6a499.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:84796082162:android:55b7f7265317bde1c78d6b",
+        "android_client_info": {
+          "package_name": "com.example.transcriptor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsLElce2XB4OYq7F0_gX2EyDKP_cLF1TQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
