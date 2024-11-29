@@ -13,6 +13,7 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 public class QRCodeGeneratorActivity extends AppCompatActivity {
 
     TextView tvUUIDShow;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +30,8 @@ public class QRCodeGeneratorActivity extends AppCompatActivity {
     private void generateQRCode(String uuid, ImageView imageView) {
         try {
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-            Bitmap bitmap = barcodeEncoder.encodeBitmap(uuid, BarcodeFormat.QR_CODE, 400, 400);
+            Bitmap bitmap = barcodeEncoder.encodeBitmap(uuid, BarcodeFormat.QR_CODE,
+                    400, 400);
             imageView.setImageBitmap(bitmap);
         } catch (Exception e) {
             e.printStackTrace();

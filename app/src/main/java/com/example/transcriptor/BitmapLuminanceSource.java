@@ -1,6 +1,7 @@
 package com.example.transcriptor;
 
 import android.graphics.Bitmap;
+
 import com.google.zxing.LuminanceSource;
 
 public class BitmapLuminanceSource extends LuminanceSource {
@@ -10,7 +11,8 @@ public class BitmapLuminanceSource extends LuminanceSource {
         super(bitmap.getWidth(), bitmap.getHeight());
 
         int[] intArray = new int[bitmap.getWidth() * bitmap.getHeight()];
-        bitmap.getPixels(intArray, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+        bitmap.getPixels(intArray, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(),
+                bitmap.getHeight());
 
         bitmapPixels = new byte[intArray.length];
         for (int i = 0; i < intArray.length; i++) {
