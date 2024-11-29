@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private MediaRecorder mediaRecorder;
     private SpeechRecognizer speechRecognizer;
     private Intent recognizerIntent;
-    private DatabaseReference database;
+    public static DatabaseReference database;
     SharedPreferences sharedPreferences;
     static String uuid = null;
     public static String uuidC = null;
@@ -104,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        monitorConversation();
+        listenForMessages();
 
         tvUUIDPair.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -113,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
                 tvUUIDPair.setText("");
                 isConnecting = false;
                 deleteConversation();
+
                 return false;
             }
         });
@@ -163,12 +166,109 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         if (speechRecognizer != null) {
             speechRecognizer.destroy();
         }
+        if(isConnecting && uuid != null && uuidC != null){
+            deleteConversation();
+        }
+        isConnecting = false;
+        Log.e("Firebase", "on stop");
+    }
+
+    public String encodeUTF8(String message) {
+        try {
+            byte[] utf8Bytes = message.getBytes("UTF-8");
+            return android.util.Base64.encodeToString(utf8Bytes, android.util.Base64.DEFAULT);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String decodeUTF8(String encodedMessage) {
+        try {
+            byte[] decodedBytes = android.util.Base64.decode(encodedMessage, android.util.Base64.DEFAULT);
+            return new String(decodedBytes, "UTF-8");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    private void sendMessageToServer(String message, String target) {
+        message = encodeUTF8(message);
+        target = encodeUTF8(target);
+
+        Map<String, Object> messageMap = new HashMap<>();
+        messageMap.put("conversations/" + uuid + "/message", message);
+        messageMap.put("conversations/" + uuid + "/translatedMessage", target);
+        messageMap.put("conversations/" + uuidC + "/message", message);
+        messageMap.put("conversations/" + uuidC + "/translatedMessage", target);
+
+        String finalTarget = target;
+        database.updateChildren(messageMap)
+                .addOnSuccessListener(aVoid -> {
+                    tvTranscription.setText("Translating...");
+                    tvTranscription.setText(decodeUTF8(finalTarget));
+                    Log.d("Firebase", "Message sent and translated successfully");
+                })
+                .addOnFailureListener(e -> Log.e("Firebase", "Failed to send message", e));
+    }
+
+    private void listenForMessages() {
+        database.child("conversations").child(uuid)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            String message = snapshot.child("message").getValue(String.class);
+                            String translatedMessage = snapshot.child("translatedMessage").getValue(String.class);
+
+                            tvScription.setText(decodeUTF8(message));
+                            tvTranscription.setText(decodeUTF8(translatedMessage));
+                        } else {
+                            tvScription.setText("");
+                            tvTranscription.setText("");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("Chat", "Failed to listen for messages", error.toException());
+                    }
+                });
+    }
+
+    private void monitorConversation() {
+        database.child("conversations").child(uuid)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            uuidC = snapshot.child("with_uuid").getValue(String.class);
+                            if (uuidC != null) {
+                                tvUUIDPair.setText(uuidC);
+                            } else {
+                                tvUUIDPair.setText("");
+                            }
+
+                        } else {
+                            isConnecting = false;
+                            tvUUIDPair.setText("");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("Firebase", "Error monitoring conversation", error.toException());
+                    }
+                });
     }
 
     private void initializeSpeechRecognizer() {
@@ -213,10 +313,9 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<String> matches = results.getStringArrayList(
                         SpeechRecognizer.RESULTS_RECOGNITION);
                 if (matches != null && !matches.isEmpty()) {
-                    String transcription = matches.get(0);
-                    tvScription.setText(transcription);
-                    tvTranscription.setText("Translating...");
-                    translateText(transcription, fromLanguage, toLanguage);
+                    String scription = matches.get(0);
+                    translateText(scription, fromLanguage, toLanguage);
+
                 }
             }
 
@@ -230,7 +329,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     private void translateText(String textToTranslate, String fromLanguage, String toLanguage) {
+        tvScription.setText(textToTranslate);
+        tvTranscription.setText("Translating...");
         translatorOptions = new TranslatorOptions.Builder()
                 .setSourceLanguage(fromLanguage)
                 .setTargetLanguage(toLanguage)
@@ -247,7 +349,13 @@ public class MainActivity extends AppCompatActivity {
                                 .addOnSuccessListener(new OnSuccessListener<String>() {
                                     @Override
                                     public void onSuccess(String s) {
-                                        tvTranscription.setText(s);
+                                        if (!isConnecting) {
+                                            tvTranscription.setText(s);
+                                            Log.e("Firebase", "Local update: " + s);
+                                        } else {
+                                            sendMessageToServer(textToTranslate, s);
+                                            Log.e("Firebase", "server update " + s);
+                                        }
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
@@ -264,7 +372,6 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 });
-
     }
 
     private void startRecording() {
@@ -328,13 +435,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void deleteConversation() {
-        Map<String, Object> deleteMap = new HashMap<>();
-        deleteMap.put("conversations/" + uuid, null);
-        deleteMap.put("conversations/" + uuidC, null);
+        database.child("conversations").child(uuid).child("with_uuid")
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (snapshot.exists()) {
+                        uuidC = snapshot.getValue(String.class);
+                        if (uuidC != null) {
 
-        database.updateChildren(deleteMap)
-                .addOnSuccessListener(aVoid -> Log.d("Firebase", "Conversation deleted successfully"))
-                .addOnFailureListener(e -> Log.e("Firebase", "Failed to delete conversation", e));
+                            Map<String, Object> deleteMap = new HashMap<>();
+                            deleteMap.put("conversations/" + uuid, null);
+                            deleteMap.put("conversations/" + uuidC, null);
+
+                            database.updateChildren(deleteMap)
+                                    .addOnSuccessListener(aVoid -> Log.d("Firebase", "Conversation deleted successfully"))
+                                    .addOnFailureListener(e -> Log.e("Firebase", "Failed to delete conversation", e));
+
+                        }
+                    }
+                });
+    }
+
+    private void removeConversationFromFirebase() {
+        Map<String, Object> removalMap = new HashMap<>();
+        removalMap.put("conversations/" + uuid, null);
+        removalMap.put("conversations/" + uuidC, null);
+
+        database.updateChildren(removalMap)
+                .addOnSuccessListener(aVoid -> Log.d("Firebase", "Conversation removed successfully"))
+                .addOnFailureListener(e -> Log.e("Firebase", "Failed to remove conversation", e));
     }
 
 
@@ -347,7 +475,7 @@ public class MainActivity extends AppCompatActivity {
     private void showQRCodeDialog() {
         Intent intent = new Intent(this, QRCodeGeneratorActivity.class);
         intent.putExtra("UUID", uuid);
-        startActivity(intent);
+        startActivityForResult(intent, 0);
     }
 
     private void getUUID(boolean exist) {
