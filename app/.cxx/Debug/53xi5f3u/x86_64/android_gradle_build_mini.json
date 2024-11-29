@@ -1,0 +1,27 @@
+{
+  "buildFiles": [
+    "D:\\AndroidProject\\Transcriptor\\app\\src\\main\\cpp\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "C:\\Users\\Luong\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "D:\\AndroidProject\\Transcriptor\\app\\.cxx\\Debug\\53xi5f3u\\x86_64",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "C:\\Users\\Luong\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "D:\\AndroidProject\\Transcriptor\\app\\.cxx\\Debug\\53xi5f3u\\x86_64",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "transcriptor::@6890427a1f51a3e7e1df": {
+      "artifactName": "transcriptor",
+      "abi": "x86_64",
+      "output": "D:\\AndroidProject\\Transcriptor\\app\\build\\intermediates\\cxx\\Debug\\53xi5f3u\\obj\\x86_64\\libtranscriptor.so",
+      "runtimeFiles": []
+    }
+  }
+}

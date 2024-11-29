@@ -1,0 +1,1 @@
+D:\AndroidProject\Transcriptor\app\src\main\cpp\CMakeLists.txt

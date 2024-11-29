@@ -1,0 +1,3 @@
+D:/AndroidProject/Transcriptor/app/.cxx/Debug/53xi5f3u/armeabi-v7a/CMakeFiles/transcriptor.dir
+D:/AndroidProject/Transcriptor/app/.cxx/Debug/53xi5f3u/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/AndroidProject/Transcriptor/app/.cxx/Debug/53xi5f3u/armeabi-v7a/CMakeFiles/rebuild_cache.dir
