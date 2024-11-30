@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onLongClick(View v) {
                 uuidC = null;
-                Log.e("Firebase", uuidC == null ? "null" : "not null");
+                Log.e("luongtd", uuidC == null ? "null" : "not null");
                 tvUUIDPair.setText("");
                 isConnecting = false;
                 deleteConversation();
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
             deleteConversation();
         }
         isConnecting = false;
-        Log.e("Firebase", "on stop");
+        Log.e("luongtd", "on stop");
     }
 
     public String encodeUTF8(String message) {
@@ -216,9 +216,9 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(aVoid -> {
                     tvTranscription.setText("Translating...");
                     tvTranscription.setText(decodeUTF8(finalTarget));
-                    Log.d("Firebase", "Message sent and translated successfully");
+                    Log.d("luongtd", "Message sent and translated successfully");
                 })
-                .addOnFailureListener(e -> Log.e("Firebase", "Failed to send message", e));
+                .addOnFailureListener(e -> Log.e("luongtd", "Failed to send message", e));
     }
 
     private void listenForMessages() {
@@ -240,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("Chat", "Failed to listen for messages", error.toException());
+                        Log.e("luongtd", "Failed to listen for messages", error.toException());
                     }
                 });
     }
@@ -266,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("Firebase", "Error monitoring conversation", error.toException());
+                        Log.e("luongtd", "Error monitoring conversation", error.toException());
                     }
                 });
     }
@@ -351,10 +351,10 @@ public class MainActivity extends AppCompatActivity {
                                     public void onSuccess(String s) {
                                         if (!isConnecting) {
                                             tvTranscription.setText(s);
-                                            Log.e("Firebase", "Local update: " + s);
+                                            Log.e("luongtd", "Local update: " + s);
                                         } else {
                                             sendMessageToServer(textToTranslate, s);
-                                            Log.e("Firebase", "server update " + s);
+                                            Log.e("luongtd", "server update " + s);
                                         }
                                     }
                                 })
@@ -407,9 +407,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void showConnectConfirmDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Accept connection")
+        builder.setTitle("Confirm connection")
                 .setIcon(R.drawable.transciptor)
-                .setMessage("Are you accept connect to" + uuidC + "?")
+                .setMessage("Are you want connect to" + uuidC + "?")
                 .setPositiveButton("Agree", (dialog, which) -> createConversation())
                 .setNegativeButton("Disagree", (dialog, which) -> {
                 });
@@ -429,8 +429,8 @@ public class MainActivity extends AppCompatActivity {
         conversationMap.put("conversations/" + uuidC + "/with_uuid", uuid);
 
         database.updateChildren(conversationMap)
-                .addOnSuccessListener(aVoid -> Log.d("Firebase", "Conversation created successfully"))
-                .addOnFailureListener(e -> Log.e("Firebase",
+                .addOnSuccessListener(aVoid -> Log.d("luongtd", "Conversation created successfully"))
+                .addOnFailureListener(e -> Log.e("luongtd",
                         "Failed to create conversation", e));
     }
 
@@ -447,8 +447,8 @@ public class MainActivity extends AppCompatActivity {
                             deleteMap.put("conversations/" + uuidC, null);
 
                             database.updateChildren(deleteMap)
-                                    .addOnSuccessListener(aVoid -> Log.d("Firebase", "Conversation deleted successfully"))
-                                    .addOnFailureListener(e -> Log.e("Firebase", "Failed to delete conversation", e));
+                                    .addOnSuccessListener(aVoid -> Log.d("luongtd", "Conversation deleted successfully"))
+                                    .addOnFailureListener(e -> Log.e("luongtd", "Failed to delete conversation", e));
 
                         }
                     }
@@ -461,8 +461,8 @@ public class MainActivity extends AppCompatActivity {
         removalMap.put("conversations/" + uuidC, null);
 
         database.updateChildren(removalMap)
-                .addOnSuccessListener(aVoid -> Log.d("Firebase", "Conversation removed successfully"))
-                .addOnFailureListener(e -> Log.e("Firebase", "Failed to remove conversation", e));
+                .addOnSuccessListener(aVoid -> Log.d("luongtd", "Conversation removed successfully"))
+                .addOnFailureListener(e -> Log.e("luongtd", "Failed to remove conversation", e));
     }
 
 
@@ -502,16 +502,16 @@ public class MainActivity extends AppCompatActivity {
                     getUUID(true);
                 } else {
                     uuidRef.setValue(true)
-                            .addOnSuccessListener(aVoid -> Log.d("Firebase",
+                            .addOnSuccessListener(aVoid -> Log.e("luongtd",
                                     "UUID saved successfully"))
-                            .addOnFailureListener(e -> Log.e("Firebase",
+                            .addOnFailureListener(e -> Log.e("luongtd",
                                     "Failed to save UUID", e));
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("Firebase", "Error checking UUID", databaseError.toException());
+                Log.e("luongtd", "Error checking UUID", databaseError.toException());
             }
         });
     }
