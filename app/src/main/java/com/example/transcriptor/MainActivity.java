@@ -17,11 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
@@ -47,9 +42,6 @@ import com.google.mlkit.nl.translate.Translation;
 import com.google.mlkit.nl.translate.Translator;
 import com.google.mlkit.nl.translate.TranslatorOptions;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -57,6 +49,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = MainActivity.class.getName();
     private static final int PAIR_REQUEST = 2;
     public static final int MIC_REQUEST = 3;
     public static final int CAMERA_PERMISSION_REQUEST = 6;
@@ -64,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_UUID = "UUID";
     private FloatingActionButton btnConnect, btnRecord;
     private TextView tvScription, tvTranscription, tvUUID, tvUUIDPair;
-    private MediaRecorder mediaRecorder;
     private SpeechRecognizer speechRecognizer;
     private Intent recognizerIntent;
     public static DatabaseReference database;
@@ -111,11 +103,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onLongClick(View v) {
                 uuidC = null;
-                Log.e("luongtd", uuidC == null ? "null" : "not null");
                 tvUUIDPair.setText("");
                 isConnecting = false;
                 deleteConversation();
-
                 return false;
             }
         });
@@ -173,11 +163,10 @@ public class MainActivity extends AppCompatActivity {
         if (speechRecognizer != null) {
             speechRecognizer.destroy();
         }
-        if(isConnecting && uuid != null && uuidC != null){
+        if (isConnecting && uuid != null && uuidC != null) {
             deleteConversation();
         }
         isConnecting = false;
-        Log.e("luongtd", "on stop");
     }
 
     public String encodeUTF8(String message) {
@@ -216,9 +205,9 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(aVoid -> {
                     tvTranscription.setText("Translating...");
                     tvTranscription.setText(decodeUTF8(finalTarget));
-                    Log.d("luongtd", "Message sent and translated successfully");
+                    Log.d(TAG, "Message sent and translated successfully");
                 })
-                .addOnFailureListener(e -> Log.e("luongtd", "Failed to send message", e));
+                .addOnFailureListener(e -> Log.e(TAG, "Failed to send message", e));
     }
 
     private void listenForMessages() {
@@ -240,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("luongtd", "Failed to listen for messages", error.toException());
+                        Log.e(TAG, "Failed to listen for messages", error.toException());
                     }
                 });
     }
@@ -266,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("luongtd", "Error monitoring conversation", error.toException());
+                        Log.e(TAG, "Error monitoring conversation", error.toException());
                     }
                 });
     }
@@ -351,10 +340,8 @@ public class MainActivity extends AppCompatActivity {
                                     public void onSuccess(String s) {
                                         if (!isConnecting) {
                                             tvTranscription.setText(s);
-                                            Log.e("luongtd", "Local update: " + s);
                                         } else {
                                             sendMessageToServer(textToTranslate, s);
-                                            Log.e("luongtd", "server update " + s);
                                         }
                                     }
                                 })
@@ -429,8 +416,8 @@ public class MainActivity extends AppCompatActivity {
         conversationMap.put("conversations/" + uuidC + "/with_uuid", uuid);
 
         database.updateChildren(conversationMap)
-                .addOnSuccessListener(aVoid -> Log.d("luongtd", "Conversation created successfully"))
-                .addOnFailureListener(e -> Log.e("luongtd",
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Conversation created successfully"))
+                .addOnFailureListener(e -> Log.e(TAG,
                         "Failed to create conversation", e));
     }
 
@@ -447,8 +434,8 @@ public class MainActivity extends AppCompatActivity {
                             deleteMap.put("conversations/" + uuidC, null);
 
                             database.updateChildren(deleteMap)
-                                    .addOnSuccessListener(aVoid -> Log.d("luongtd", "Conversation deleted successfully"))
-                                    .addOnFailureListener(e -> Log.e("luongtd", "Failed to delete conversation", e));
+                                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Conversation deleted successfully"))
+                                    .addOnFailureListener(e -> Log.e(TAG, "Failed to delete conversation", e));
 
                         }
                     }
@@ -461,8 +448,8 @@ public class MainActivity extends AppCompatActivity {
         removalMap.put("conversations/" + uuidC, null);
 
         database.updateChildren(removalMap)
-                .addOnSuccessListener(aVoid -> Log.d("luongtd", "Conversation removed successfully"))
-                .addOnFailureListener(e -> Log.e("luongtd", "Failed to remove conversation", e));
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Conversation removed successfully"))
+                .addOnFailureListener(e -> Log.e(TAG, "Failed to remove conversation", e));
     }
 
 
@@ -502,16 +489,17 @@ public class MainActivity extends AppCompatActivity {
                     getUUID(true);
                 } else {
                     uuidRef.setValue(true)
-                            .addOnSuccessListener(aVoid -> Log.e("luongtd",
+                            .addOnSuccessListener(aVoid -> Log.d(TAG,
                                     "UUID saved successfully"))
-                            .addOnFailureListener(e -> Log.e("luongtd",
+                            .addOnFailureListener(e -> Log.e(TAG,
                                     "Failed to save UUID", e));
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("luongtd", "Error checking UUID", databaseError.toException());
+                Log.e(TAG, "Error checking UUID", databaseError.toException());
+
             }
         });
     }
