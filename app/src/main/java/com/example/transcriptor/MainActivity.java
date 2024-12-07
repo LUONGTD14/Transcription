@@ -394,9 +394,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void showConnectConfirmDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Accept connection")
+        builder.setTitle("Confirm connection")
                 .setIcon(R.drawable.transciptor)
-                .setMessage("Are you accept connect to" + uuidC + "?")
+                .setMessage("Are you want connect to" + uuidC + "?")
                 .setPositiveButton("Agree", (dialog, which) -> createConversation())
                 .setNegativeButton("Disagree", (dialog, which) -> {
                 });
@@ -499,6 +499,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e(TAG, "Error checking UUID", databaseError.toException());
+
             }
         });
     }
